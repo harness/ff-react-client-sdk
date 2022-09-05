@@ -245,7 +245,7 @@ import { withFeatureFlags } from '@harnessio/ff-react-client-sdk'
 
 // ...
 
-function MyComponent({ flags }: { flags: Record<string, any> }) {
+function MyComponent({ flags }) {
   return <p>Flag1's value is {flags.flag1}</p>
 }
 
