@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "dist",
+    "outDir": "dist/esm",
     "declaration": true
   },
   "exclude": ["src/**/__tests__"]
