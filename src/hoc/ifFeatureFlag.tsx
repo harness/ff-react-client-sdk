@@ -1,16 +1,28 @@
-import React, { ComponentType } from 'react'
+import React, { ComponentType, ReactNode } from 'react'
 import { FFContext } from '../context/FFContext'
 
-export function ifFeatureFlag<C>(flagName: string, value?: any) {
+export interface IfFeatureFlagOptions {
+  matchValue?: unknown
+  loadingFallback?: ReactNode
+}
+
+export function ifFeatureFlag<C>(
+  flagName: string,
+  { matchValue = undefined, loadingFallback = null }: IfFeatureFlagOptions = {}
+) {
   return function ifFeatureFlagHoc(WrappedComponent: ComponentType<C>) {
     return (props: C) => (
       <FFContext.Consumer>
-        {({ flags }) => {
+        {({ flags, loading }) => {
+          if (loading) {
+            return loadingFallback
+          }
+
           const flagValue = flags?.[flagName]
 
           if (
-            (value === flagValue && flagName in flags) ||
-            (value === undefined && !!flagValue)
+            (matchValue === flagValue && flagName in flags) ||
+            (matchValue === undefined && !!flagValue)
           ) {
             return <WrappedComponent {...props} />
           }

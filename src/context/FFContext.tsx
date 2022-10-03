@@ -22,11 +22,12 @@ export interface FFContextValue {
 
 export const FFContext = createContext<FFContextValue>({} as FFContextValue)
 
-export interface FFContextProviderProps extends PropsWithChildren {
+interface FFContextProviderProps extends PropsWithChildren {
   apiKey: string
   target: Target
   options?: Options
   fallback?: ReactNode
+  async?: boolean
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -34,7 +35,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   apiKey,
   target,
   options = {},
-  fallback = <p>Loading...</p>
+  fallback = <p>Loading...</p>,
+  async = false
 }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
@@ -76,7 +78,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
 
   return (
     <FFContext.Provider value={{ loading, flags }}>
-      {loading ? fallback : children}
+      {!async && loading ? fallback : children}
     </FFContext.Provider>
   )
 }

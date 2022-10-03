@@ -1,16 +1,14 @@
 import React, { ComponentType } from 'react'
 import { FFContext, FFContextValue } from '../context/FFContext'
 
-interface WrappedComponentType {
-  flags: FFContextValue['flags']
-}
-
 export function withFeatureFlags<C>(
-  WrappedComponent: ComponentType<C & WrappedComponentType>
+  WrappedComponent: ComponentType<C & FFContextValue>
 ) {
   return (props: C) => (
     <FFContext.Consumer>
-      {({ flags }) => <WrappedComponent flags={flags} {...props} />}
+      {({ flags, loading }) => (
+        <WrappedComponent flags={flags} loading={loading} {...props} />
+      )}
     </FFContext.Consumer>
   )
 }
