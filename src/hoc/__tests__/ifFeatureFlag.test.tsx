@@ -13,11 +13,12 @@ const SampleComponent = () => (
 
 const renderComponent = (
   WrappedComponent: ComponentType,
-  flags: FFContextValue['flags'] = {}
+  flags: FFContextValue['flags'] = {},
+  loading: boolean = false
 ): RenderResult =>
   render(<WrappedComponent />, {
     wrapper: ({ children }) => (
-      <FFContext.Provider value={{ flags, loading: false }}>
+      <FFContext.Provider value={{ flags, loading }}>
         {children}
       </FFContext.Provider>
     )
@@ -25,7 +26,9 @@ const renderComponent = (
 
 describe('ifFeatureFlag', () => {
   test('it should render if the condition matches', async () => {
-    const WrappedComponent = ifFeatureFlag('myFlag', true)(SampleComponent)
+    const WrappedComponent = ifFeatureFlag('myFlag', { matchValue: true })(
+      SampleComponent
+    )
 
     renderComponent(WrappedComponent, { myFlag: true })
 
@@ -33,7 +36,9 @@ describe('ifFeatureFlag', () => {
   })
 
   test('it should not render if the condition does not match', async () => {
-    const WrappedComponent = ifFeatureFlag('myFlag', 123)(SampleComponent)
+    const WrappedComponent = ifFeatureFlag('myFlag', { matchValue: 123 })(
+      SampleComponent
+    )
 
     renderComponent(WrappedComponent, { myFlag: 'abc' })
 
@@ -62,5 +67,27 @@ describe('ifFeatureFlag', () => {
     renderComponent(WrappedComponent)
 
     expect(screen.queryByTestId('sample-component')).not.toBeInTheDocument()
+  })
+
+  test('it should display nothing if loading and no loadingFallback provided', async () => {
+    const WrappedComponent = ifFeatureFlag('myFlag')(SampleComponent)
+
+    renderComponent(WrappedComponent, { myFlag: true }, true)
+
+    expect(screen.queryByTestId('sample-component')).not.toBeInTheDocument()
+  })
+
+  test('it should display the loadingFallback when loading', async () => {
+    const loadingFallback = (
+      <span data-testid="loading-fallback">Loading...</span>
+    )
+    const WrappedComponent = ifFeatureFlag('myFlag', { loadingFallback })(
+      SampleComponent
+    )
+
+    renderComponent(WrappedComponent, { myFlag: true }, true)
+
+    expect(screen.queryByTestId('sample-component')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('loading-fallback')).toBeInTheDocument()
   })
 })

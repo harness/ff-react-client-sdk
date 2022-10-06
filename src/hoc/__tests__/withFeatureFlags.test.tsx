@@ -13,11 +13,12 @@ const SampleComponent: FC = (props) => (
 
 const renderComponent = (
   WrappedComponent: ComponentType,
-  flags: FFContextValue['flags'] = {}
+  flags: FFContextValue['flags'] = {},
+  loading: boolean = false
 ): RenderResult =>
   render(<WrappedComponent />, {
     wrapper: ({ children }) => (
-      <FFContext.Provider value={{ flags, loading: false }}>
+      <FFContext.Provider value={{ flags, loading }}>
         {children}
       </FFContext.Provider>
     )
@@ -48,6 +49,19 @@ describe('withFeatureFlags', () => {
     renderComponent(WrappedComponentWithExtraProps, flags)
     const el = screen.getByTestId('sample-component')
     expect(el).toBeInTheDocument()
-    expect(el).toHaveTextContent(JSON.stringify({ flags, ...extraProps }))
+    expect(el).toHaveTextContent(
+      JSON.stringify({ flags, loading: false, ...extraProps })
+    )
+  })
+
+  test('it should pass the loading prop to the component', async () => {
+    const flags = {}
+    const WrappedComponent = withFeatureFlags(SampleComponent)
+
+    renderComponent(WrappedComponent, flags, true)
+
+    const el = screen.getByTestId('sample-component')
+    expect(el).toBeInTheDocument()
+    expect(el).toHaveTextContent(JSON.stringify({ flags, loading: true }))
   })
 })

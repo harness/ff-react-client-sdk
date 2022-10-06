@@ -1,6 +1,6 @@
 {
   "name": "@harnessio/ff-react-client-sdk",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.8",
   "author": "Harness",
   "license": "Apache-2.0",
   "module": "dist/esm/index.js",
@@ -15,7 +15,8 @@
     "build": "rm -rf ./dist; npm run build-esm; npm run build-cjs",
     "build-esm": "tsc -p ./tsconfig-build.json",
     "build-cjs": "tsc -p ./tsconfig-build.json --module commonjs --outDir dist/cjs",
-    "format": "prettier --write src"
+    "format": "prettier --write src",
+    "postinstall": "npm run build"
   },
   "peerDependencies": {
     "react": ">=16.7.0"
