@@ -1,5 +1,5 @@
 | ⚠️ ALPHA: PLEASE DON'T USE IN PROD ⚠️ |
-| --------------------------------- |
+| ------------------------------------- |
 
 # React.js Client SDK For Harness Feature Flags
 
@@ -84,9 +84,7 @@ function SingleFeatureFlag() {
   const flagValue = useFeatureFlag('harnessappdemodarkmode')
 
   return (
-    <p>
-      The "harnessappdemodarkmode" flag's value is {JSON.stringify(flagValue)}
-    </p>
+    <p>The value of "harnessappdemodarkmode" is {JSON.stringify(flagValue)}</p>
   )
 }
 
@@ -95,23 +93,33 @@ function MultipleFeatureFlags() {
 
   return (
     <>
-      <p>Here's all our flags:</p>
+      <p>Here are all our flags:</p>
       <pre>{JSON.stringify(flags, null, 2)}</pre>
     </>
   )
 }
 ```
 
+## Async mode
+
+By default, the React Client SDK will block rendering of children until the initial load of Feature Flags has completed.
+This ensures that children have immediate access to all Flags when they are rendered. However, in some circumstances it
+may be beneficial to immediately render the application and handle display of loading on a component-by-component basis.
+The React Client SDK's asynchronous mode allows this by passing the optional `async` prop when connecting with the
+`FFContextProvider`.
+
 ## API
 
 ### `FFContextProvider`
 
 The `FFContextProvider` component is used to set up the React context to allow your application to access Feature Flags
-using the `useFeatureFlag` and `useFeatureFlags` hooks. At minimum, it requires the `apiKey` you have set up in your
-Harness Feature Flags account, and the `target`. You can think of a `target` as a user.
+using the `useFeatureFlag` and `useFeatureFlags` hooks and `withFeatureFlags`
+[HOC](https://reactjs.org/docs/higher-order-components.html). At minimum, it requires the `apiKey` you have set up in
+your Harness Feature Flags account, and the `target`. You can think of a `target` as a user.
 
-The `FFContextProvider` component also accepts an `options` object and a `fallback` component. The `fallback` component
-will be displayed while the SDK is connecting and fetching your flags.
+The `FFContextProvider` component also accepts an `options` object, a `fallback` component and can be placed in
+[Async mode](#Async-mode) using the `async` prop. The `fallback` component will be displayed while the SDK is connecting
+and fetching your flags.
 
 ```typescript jsx
 import { FFContextProvider } from '@harnessio/ff-react-client-sdk'
@@ -121,6 +129,7 @@ import { FFContextProvider } from '@harnessio/ff-react-client-sdk'
 function MyComponent() {
   return (
     <FFContextProvider
+      async={false} // OPTIONAL: whether or not to use async mode
       apiKey="YOUR_API_KEY" // your SDK API key
       target={{
         identifier: 'targetId', // unique ID of the Target
@@ -152,6 +161,8 @@ The `useFeatureFlag` hook returns a single named flag value. An optional second 
 will be returned if the flag does not have a value. By default `useFeatureFlag` will return `undefined` if the flag
 cannot be found.
 
+> N.B. when rendered in [Async mode](#Async-mode), the default value will be returned until the Flags are retrieved.
+
 ```typescript jsx
 import { useFeatureFlag } from '@harnessio/ff-react-client-sdk'
 
@@ -169,6 +180,8 @@ function MyComponent() {
 The `useFeatureFlags` hooks returns an object of Flag identifier/Flag value pairs. You can pass an array of Flag
 identifiers or an object of Flag identifier/default value pairs. If an array is used and a Flag cannot be found, the
 returned value for the flag will be `undefined`. If no arguments are passed, all Flags will be returned.
+
+> N.B. when rendered in [Async mode](#Async-mode), the default value will be returned until the Flags are retrieved.
 
 ```typescript jsx
 import { useFeatureFlag } from '@harnessio/ff-react-client-sdk'
@@ -232,16 +245,39 @@ function MyComponent() {
   return <p>This should render if the flag evaluates to 'ABC123'</p>
 }
 
-const MyConditionalComponent = ifFeatureFlag('flag1', 'ABC123')(MyComponent)
+const MyConditionalComponent = ifFeatureFlag('flag1', { matchValue: 'ABC123' })(
+  MyComponent
+)
 ```
 
 You can then use `MyConditionalComponent` as a normal component, only render if `flag1`'s value matches the passed
 condition.
 
+#### Loading fallback when in async mode
+
+If [Async mode](#Async-mode) is used, by default the component will wait for Flags to be retrieved before showing. This
+behaviour can be overridden by passing an element as `loadingFallback`; when loading the `loadingFallback` will be
+displayed until the Flags are retrieved, at which point the component will either show or hide as normal.
+
+```typescript jsx
+import { ifFeatureFlag } from '@harnessio/ff-react-client-sdk'
+
+// ...
+
+function MyComponent() {
+  return <p>This should render if the flag is on</p>
+}
+
+const MyConditionalComponent = ifFeatureFlag('flag1', {
+  loadingFallback: <p>Loading...</p>
+})(MyComponent)
+```
+
 ### `withFeatureFlags`
 
-The `withFeatureFlags` higher-order component (HOC) wraps your component and adds `flags` as an additional prop. `flags`
-contains the evaluations for all known flags.
+The `withFeatureFlags` higher-order component (HOC) wraps your component and adds `flags` and `loading` as additional
+props. `flags` contains the evaluations for all known flags and `loading` indicates whether the SDK is actively fetching
+Flags.
 
 ```typescript jsx
 import { withFeatureFlags } from '@harnessio/ff-react-client-sdk'
@@ -249,6 +285,27 @@ import { withFeatureFlags } from '@harnessio/ff-react-client-sdk'
 // ...
 
 function MyComponent({ flags }) {
+  return <p>Flag1's value is {flags.flag1}</p>
+}
+
+const MyComponentWithFlags = withFeatureFlags(MyComponent)
+```
+
+#### Loading in async mode
+
+If [Async mode](#Async-mode) is used, the `loading` prop will indicate whether the SDK has completed loading the Flags.
+When loading completes, the `loading` prop will be `false` and the `flags` prop will contain all known Flags.
+
+```typescript jsx
+import { withFeatureFlags } from '@harnessio/ff-react-client-sdk'
+
+// ...
+
+function MyComponent({ flags, loading }) {
+  if (loading) {
+    return <p>Loading...</p>
+  }
+
   return <p>Flag1's value is {flags.flag1}</p>
 }
 
