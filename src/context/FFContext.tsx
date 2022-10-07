@@ -22,7 +22,7 @@ export interface FFContextValue {
 
 export const FFContext = createContext<FFContextValue>({} as FFContextValue)
 
-interface FFContextProviderProps extends PropsWithChildren {
+export interface FFContextProviderProps extends PropsWithChildren {
   apiKey: string
   target: Target
   options?: Options
