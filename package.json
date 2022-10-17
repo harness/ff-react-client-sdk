@@ -1,6 +1,6 @@
 {
   "name": "@harnessio/ff-react-client-sdk",
-  "version": "1.0.0-alpha.10",
+  "version": "1.0.0-alpha.11",
   "author": "Harness",
   "license": "Apache-2.0",
   "module": "dist/esm/index.js",
@@ -21,7 +21,7 @@
     "react": ">=16.7.0"
   },
   "dependencies": {
-    "@harnessio/ff-javascript-client-sdk": "^1.4.11",
+    "@harnessio/ff-javascript-client-sdk": "^1.4.12",
     "lodash.omit": "^4.5.0"
   },
   "devDependencies": {
