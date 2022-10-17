@@ -70,8 +70,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.off(FFEvent.READY, onInitialLoad)
         client.off(FFEvent.CHANGED, onFlagChange)
 
-        client.on(FFEvent.READY, client.close)
-        client.on(FFEvent.CONNECTED, client.close)
+        client.close()
       }
     }
   }, [apiKey, JSON.stringify(target)])
