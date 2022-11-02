@@ -1,0 +1,26 @@
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader::before {
+  content: '';
+  display: inline-block;
+  width: 50px;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  border: 5px solid white;
+  border-top-color: transparent;
+  animation: 1s linear forwards infinite spin;
+}
+
+.loader {
+  width: auto;
+  height: 200px;
+  display: grid;
+  place-items: center;
+}
