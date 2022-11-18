@@ -1,6 +1,3 @@
-| ⚠️ ALPHA: PLEASE DON'T USE IN PROD ⚠️ |
-| ------------------------------------- |
-
 # React.js Client SDK For Harness Feature Flags
 
 [![React version][react-badge]][reactjs]
@@ -150,7 +147,7 @@ function MyComponent() {
       }}
     >
       <CompontToDisplayAfterLoad /> <!-- component to display when Flags are available -->
-    < /FFContextProvider>
+    </FFContextProvider>
   )
 }
 ```
