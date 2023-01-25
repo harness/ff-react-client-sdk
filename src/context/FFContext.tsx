@@ -22,12 +22,21 @@ export interface FFContextValue {
 
 export const FFContext = createContext<FFContextValue>({} as FFContextValue)
 
+export type NetworkError =
+  | FFEvent.ERROR_AUTH
+  | FFEvent.ERROR_STREAM
+  | FFEvent.ERROR_FETCH_FLAG
+  | FFEvent.ERROR_FETCH_FLAGS
+  | FFEvent.ERROR_METRICS
+
 export interface FFContextProviderProps extends PropsWithChildren {
   apiKey: string
   target: Target
   options?: Options
   fallback?: ReactNode
   async?: boolean
+  initialEvaluations?: Evaluation[]
+  onError?: (event: NetworkError, error?: unknown) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -36,7 +45,9 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   target,
   options = {},
   fallback = <p>Loading...</p>,
-  async = false
+  async = false,
+  initialEvaluations,
+  onError = () => void 0
 }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
@@ -63,17 +74,41 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         }
       }
 
+      const onNetworkError = (errorType: NetworkError) => (e: unknown) => {
+        onError(errorType, e)
+      }
+
+      const onAuthError = onNetworkError(FFEvent.ERROR_AUTH)
+      const onStreamError = onNetworkError(FFEvent.ERROR_STREAM)
+      const onFetchFlagError = onNetworkError(FFEvent.ERROR_FETCH_FLAG)
+      const onFetchFlagsError = onNetworkError(FFEvent.ERROR_FETCH_FLAGS)
+      const onMetricsError = onNetworkError(FFEvent.ERROR_METRICS)
+
       client.on(FFEvent.READY, onInitialLoad)
       client.on(FFEvent.CHANGED, onFlagChange)
+      client.on(FFEvent.ERROR_AUTH, onAuthError)
+      client.on(FFEvent.ERROR_STREAM, onStreamError)
+      client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
+      client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
+      client.on(FFEvent.ERROR_METRICS, onMetricsError)
+
+      if (initialEvaluations) {
+        client.setEvaluations(initialEvaluations)
+      }
 
       return () => {
         client.off(FFEvent.READY, onInitialLoad)
         client.off(FFEvent.CHANGED, onFlagChange)
+        client.off(FFEvent.ERROR_AUTH, onAuthError)
+        client.off(FFEvent.ERROR_STREAM, onStreamError)
+        client.off(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
+        client.off(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
+        client.off(FFEvent.ERROR_METRICS, onMetricsError)
 
         client.close()
       }
     }
-  }, [apiKey, JSON.stringify(target)])
+  }, [apiKey, JSON.stringify(target), initialEvaluations])
 
   return (
     <FFContext.Provider value={{ loading, flags }}>

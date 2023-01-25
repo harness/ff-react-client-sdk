@@ -13,6 +13,7 @@ const config: Config.InitialOptions = {
   setupFilesAfterEnv: ['<rootDir>/jest-setup.ts'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.test.{ts,tsx}'],
   coverageReporters: ['lcov', 'json-summary', 'json'],
+  reporters: ['default', 'jest-junit'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest'
   },
