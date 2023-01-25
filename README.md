@@ -114,9 +114,11 @@ using the `useFeatureFlag` and `useFeatureFlags` hooks and `withFeatureFlags`
 [HOC](https://reactjs.org/docs/higher-order-components.html). At minimum, it requires the `apiKey` you have set up in
 your Harness Feature Flags account, and the `target`. You can think of a `target` as a user.
 
-The `FFContextProvider` component also accepts an `options` object, a `fallback` component and can be placed in
-[Async mode](#Async-mode) using the `async` prop. The `fallback` component will be displayed while the SDK is connecting
-and fetching your flags.
+The `FFContextProvider` component also accepts an `options` object, a `fallback` component, an array
+of `initialEvaluations`, an `onError` handler, and can be placed in [Async mode](#Async-mode) using the `async` prop.
+The `fallback` component will be displayed while the SDK is connecting and fetching your flags. The `initialEvaluations`
+prop allows you pass an array of evaluations to use immediately as the SDK is authenticating and fetching flags.
+The `onError` prop allows you to pass an event handler which will be called whenever a network error occurs.
 
 ```typescript jsx
 import { FFContextProvider } from '@harnessio/ff-react-client-sdk'
@@ -137,14 +139,17 @@ function MyComponent() {
         }
       }}
       fallback={<p>Loading ...</p>} // OPTIONAL: component to display when the SDK is connecting
-      options={{ // OPTIONAL: advanced options
+      options={{ // OPTIONAL: advanced configuration options
         baseUrl: 'https://url-to-access-flags.com',
         eventUrl: 'https://url-for-events.com',
         streamEnabled: true,
         allAttributesPrivate: false,
         privateAttributeNames: ['customAttribute'],
-        debug: true
+        debug: true,
+        eventsSyncInterval: 60000
       }}
+      initialEvaluations={evals} // OPTIONAL: array of evaluations to use while fetching
+      onError={handler} // OPTIONAL: event handler to be called on network error
     >
       <CompontToDisplayAfterLoad /> <!-- component to display when Flags are available -->
     </FFContextProvider>
