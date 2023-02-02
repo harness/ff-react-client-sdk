@@ -105,6 +105,28 @@ may be beneficial to immediately render the application and handle display of lo
 The React Client SDK's asynchronous mode allows this by passing the optional `async` prop when connecting with the
 `FFContextProvider`.
 
+## Caching evaluations
+
+In practice flags rarely change and so it can be useful to cache the last received evaluations from the server to allow
+your application to get started as fast as possible. Setting the `cache` option as `true` will allow the SDK to store
+its evaluations to `localStorage` and retrieve at startup. This lets the SDK get started near instantly and begin
+serving flags, while it carries on authenticating and fetching up-to-date evaluations from the server behind the scenes.
+
+```typescript jsx
+<FFContextProvider
+  apiKey="YOUR_API_KEY"
+  target={{
+    identifier: 'reactclientsdk',
+    name: 'ReactClientSDK'
+  }}
+  options={{
+    cache: true
+  }}
+>
+  <MyApp />
+</FFContextProvider>
+```
+
 ## API
 
 ### `FFContextProvider`
@@ -140,6 +162,7 @@ function MyComponent() {
       }}
       fallback={<p>Loading ...</p>} // OPTIONAL: component to display when the SDK is connecting
       options={{ // OPTIONAL: advanced configuration options
+        cache: false,
         baseUrl: 'https://url-to-access-flags.com',
         eventUrl: 'https://url-for-events.com',
         streamEnabled: true,
