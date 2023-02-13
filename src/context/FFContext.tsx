@@ -36,7 +36,7 @@ export interface FFContextProviderProps extends PropsWithChildren {
   fallback?: ReactNode
   async?: boolean
   initialEvaluations?: Evaluation[]
-  onError?: (event: NetworkError, error?: unknown) => void
+  onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -53,7 +53,21 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
 
   useEffect(() => {
-    if (apiKey && target) {
+    if (!apiKey) {
+      console.error('[FF-SDK] apiKey prop is required')
+      onError('PropsError', { message: 'apiKey prop is required' })
+    }
+  }, [apiKey])
+
+  useEffect(() => {
+    if (!target?.identifier) {
+      console.error('[FF-SDK] target prop is required')
+      onError('PropsError', { message: 'target prop is required' })
+    }
+  }, [target?.identifier])
+
+  useEffect(() => {
+    if (apiKey && target?.identifier) {
       const client = initialize(apiKey, target, options)
 
       setLoading(true)
