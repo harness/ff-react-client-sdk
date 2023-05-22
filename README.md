@@ -9,7 +9,7 @@ Use this README to get started with our Feature Flags (FF) Client SDK for React.
 getting started with the SDK and provides a full code sample for you to try out.
 
 This sample doesn't include configuration options, for in depth steps and configuring the SDK, see
-the [React Client SDK Reference](https://docs.harness.io/article/ptyhvcixyg-react-client-sdk-guide).
+the [React Client SDK Reference](https://developer.harness.io/docs/feature-flags/ff-sdks/client-sdks/react-client).
 
 ## Requirements
 
@@ -349,7 +349,7 @@ const MyComponentWithFlags = withFeatureFlags(MyComponent)
 ## Additional Reading
 
 For further examples and config options, see
-the [React.js Client SDK Reference](https://docs.harness.io/article/ptyhvcixyg-react-client-sdk-guide)
+the [React.js Client SDK Reference](https://developer.harness.io/docs/feature-flags/ff-sdks/client-sdks/react-client)
 For more information about Feature Flags, see
 our [Feature Flags documentation](https://docs.harness.io/article/0a2u2ppp8s-getting-started-with-feature-flags).
 
