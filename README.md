@@ -20,9 +20,9 @@ To use this SDK, make sure you’ve:
 
 To follow along with our test code sample, make sure you’ve:
 
-- [Created a Feature Flag on the Harness Platform](https://docs.harness.io/article/1j7pdkqh7j-create-a-feature-flag)
+- [Created a Feature Flag on the Harness Platform](https://developer.harness.io/docs/feature-flags/ff-creating-flag/create-a-feature-flag/)
   called `harnessappdemodarkmode`
-- [Created a client SDK key](https://docs.harness.io/article/1j7pdkqh7j-create-a-feature-flag#step_3_create_an_sdk_key)
+- [Created a client SDK key](https://developer.harness.io/docs/feature-flags/ff-creating-flag/create-a-project#create-an-sdk-key)
   and made a copy of it
 
 ## Installing the SDK
@@ -196,6 +196,8 @@ will be returned if the flag does not have a value. By default `useFeatureFlag` 
 cannot be found.
 
 > N.B. when rendered in [Async mode](#Async-mode), the default value will be returned until the Flags are retrieved.
+> Consider using the [useFeatureFlagsLoading hook](#usefeatureflagsloading) to determine when the SDK has finished
+> loading.
 
 ```typescript jsx
 import { useFeatureFlag } from '@harnessio/ff-react-client-sdk'
@@ -211,11 +213,13 @@ function MyComponent() {
 
 ### `useFeatureFlags`
 
-The `useFeatureFlags` hooks returns an object of Flag identifier/Flag value pairs. You can pass an array of Flag
+The `useFeatureFlags` hook returns an object of Flag identifier/Flag value pairs. You can pass an array of Flag
 identifiers or an object of Flag identifier/default value pairs. If an array is used and a Flag cannot be found, the
 returned value for the flag will be `undefined`. If no arguments are passed, all Flags will be returned.
 
 > N.B. when rendered in [Async mode](#Async-mode), the default value will be returned until the Flags are retrieved.
+> Consider using the [useFeatureFlagsLoading hook](#usefeatureflagsloading) to determine when the SDK has finished
+> loading.
 
 ```typescript jsx
 import { useFeatureFlag } from '@harnessio/ff-react-client-sdk'
@@ -247,6 +251,36 @@ const myFlagValues = useFeatureFlags({
   flag1: 'defaultForFlag1',
   flag2: 'defaultForFlag2'
 })
+```
+
+### `useFeatureFlagsLoading`
+
+The `useFeatureFlagsLoading` hook returns a boolean value indicating whether or not the SDK is currently loading Flags
+from the server.
+
+```typescript jsx
+import {
+  useFeatureFlagsLoading,
+  useFeatureFlags
+} from '@harnessio/ff-react-client-sdk'
+
+// ...
+
+function MyComponent() {
+  const isLoading = useFeatureFlagsLoading()
+  const flags = useFeatureFlags()
+
+  if (isLoading) {
+    return <p>Loading ...</p>
+  }
+
+  return (
+    <>
+      <p>My flag values are:</p>
+      <pre>{JSON.stringify(flags, null, 2)}</pre>
+    </>
+  )
+}
 ```
 
 ### `ifFeatureFlag`
@@ -346,12 +380,39 @@ function MyComponent({ flags, loading }) {
 const MyComponentWithFlags = withFeatureFlags(MyComponent)
 ```
 
+## Testing with Jest
+
+When running tests with Jest, you may want to mock the SDK to avoid making network requests. You can do this by using
+the included `TestWrapper` component. This component accepts a listing of flags and their values, and will mock the SDK
+to return those values. In the example below, we use Testing Library to render the component `<MyComponent />` that
+internally uses the `useFeatureFlag` hook.
+
+> N.B. to use the `TestWrapper` component, you must import it from the `dist/cjs/test-utils` directory, not from the
+> main package.
+
+```typescript jsx
+import { render, screen } from '@testing-library/react'
+import { TestWrapper } from '@harnessio/ff-react-client-sdk/dist/cjs/test-utils'
+
+// ...
+
+test('it should render the flag value', () => {
+  render(
+    <TestWrapper flags={{ flag1: 'value1', flag2: 'value2' }}>
+      <MyComponent />
+    </TestWrapper>
+  )
+
+  expect(screen.getByText('value1')).toBeInTheDocument()
+})
+```
+
 ## Additional Reading
 
 For further examples and config options, see
 the [React.js Client SDK Reference](https://developer.harness.io/docs/feature-flags/ff-sdks/client-sdks/react-client)
 For more information about Feature Flags, see
-our [Feature Flags documentation](https://docs.harness.io/article/0a2u2ppp8s-getting-started-with-feature-flags).
+our [Feature Flags documentation](https://developer.harness.io/docs/feature-flags/ff-onboarding/getting-started-with-feature-flags/).
 
 [ts-badge]: https://img.shields.io/badge/TypeScript-4.7-blue.svg
 [react-badge]: https://img.shields.io/badge/React.js->=%2016.7-blue.svg

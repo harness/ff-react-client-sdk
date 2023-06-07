@@ -1,5 +1,6 @@
 export * from './context/FFContext'
 export * from './hooks/useFeatureFlag'
 export * from './hooks/useFeatureFlags'
+export * from './hooks/useFeatureFlagsLoading'
 export * from './hoc/ifFeatureFlag'
 export * from './hoc/withFeatureFlags'

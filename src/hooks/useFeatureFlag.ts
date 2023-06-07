@@ -5,7 +5,11 @@ export const useFeatureFlag = (
   flagIdentifier: string,
   defaultValue: any = undefined
 ) => {
-  const { flags } = useContext(FFContext)
+  const { client } = useContext(FFContext)
 
-  return flagIdentifier in flags ? flags[flagIdentifier] : defaultValue
+  if (client) {
+    return client.variation(flagIdentifier, defaultValue)
+  }
+
+  return defaultValue
 }

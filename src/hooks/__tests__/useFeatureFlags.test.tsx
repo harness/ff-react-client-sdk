@@ -1,11 +1,6 @@
-import { createContext } from 'react'
 import { renderHook, RenderHookResult } from '@testing-library/react'
 import { useFeatureFlags } from '../useFeatureFlags'
-import { FFContext } from '../../context/FFContext'
-
-jest.mock('../../context/FFContext', () => ({
-  FFContext: createContext({ flags: {} })
-}))
+import { TestWrapper } from '../../test-utils/TestWrapper'
 
 const renderUseFeatureFlagsHook = (
   args: Parameters<typeof useFeatureFlags>,
@@ -14,9 +9,7 @@ const renderUseFeatureFlagsHook = (
   renderHook((args) => useFeatureFlags(...args), {
     initialProps: args,
     wrapper: ({ children }) => (
-      <FFContext.Provider value={{ flags, loading: false }}>
-        {children}
-      </FFContext.Provider>
+      <TestWrapper flags={flags}>{children}</TestWrapper>
     )
   })
 

@@ -11,6 +11,7 @@ import {
   Event as FFEvent,
   initialize,
   Options,
+  Result as InitializeResult,
   Target
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
@@ -18,6 +19,7 @@ import omit from 'lodash.omit'
 export interface FFContextValue {
   loading: boolean
   flags: Record<string, any>
+  client?: InitializeResult
 }
 
 export const FFContext = createContext<FFContextValue>({} as FFContextValue)
@@ -51,6 +53,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
+  const [clientInstance, setClientInstance] =
+    useState<FFContextValue['client']>()
 
   useEffect(() => {
     if (!apiKey) {
@@ -71,6 +75,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const client = initialize(apiKey, target, options)
 
       setLoading(true)
+      setClientInstance(client)
 
       const onInitialLoad = (newFlags: FFContextValue['flags']): void => {
         setLoading(false)
@@ -125,7 +130,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   }, [apiKey, JSON.stringify(target), initialEvaluations])
 
   return (
-    <FFContext.Provider value={{ loading, flags }}>
+    <FFContext.Provider value={{ loading, flags, client: clientInstance }}>
       {!async && loading ? fallback : children}
     </FFContext.Provider>
   )
