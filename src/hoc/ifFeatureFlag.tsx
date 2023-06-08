@@ -13,16 +13,19 @@ export function ifFeatureFlag<C>(
   return function ifFeatureFlagHoc(WrappedComponent: ComponentType<C>) {
     return (props: C) => (
       <FFContext.Consumer>
-        {({ flags, loading }) => {
+        {({ client, loading }) => {
           if (loading) {
             return loadingFallback
           }
 
-          const flagValue = flags?.[flagName]
+          const internalNoValue = 'FF_SDK_INTERNAL_NO_VALUE'
+          const flagValue = client?.variation(flagName, internalNoValue)
 
           if (
-            (matchValue === flagValue && flagName in flags) ||
-            (matchValue === undefined && !!flagValue)
+            matchValue === flagValue ||
+            (matchValue === undefined &&
+              flagValue !== internalNoValue &&
+              !!flagValue)
           ) {
             return <WrappedComponent {...props} />
           }

@@ -1,11 +1,8 @@
-import React, { ComponentType, createContext } from 'react'
+import React, { ComponentType } from 'react'
 import { ifFeatureFlag } from '../ifFeatureFlag'
 import { render, RenderResult, screen } from '@testing-library/react'
-import { FFContext, FFContextValue } from '../../context/FFContext'
-
-jest.mock('../../context/FFContext', () => ({
-  FFContext: createContext({ flags: {} })
-}))
+import { FFContextValue } from '../../context/FFContext'
+import { TestWrapper } from '../../test-utils/TestWrapper'
 
 const SampleComponent = () => (
   <span data-testid="sample-component">Sample Component</span>
@@ -18,9 +15,9 @@ const renderComponent = (
 ): RenderResult =>
   render(<WrappedComponent />, {
     wrapper: ({ children }) => (
-      <FFContext.Provider value={{ flags, loading }}>
+      <TestWrapper flags={flags} loading={loading}>
         {children}
-      </FFContext.Provider>
+      </TestWrapper>
     )
   })
 
