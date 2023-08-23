@@ -21,7 +21,7 @@
     "react": ">=16.7.0"
   },
   "dependencies": {
-    "@harnessio/ff-javascript-client-sdk": "^1.13.0",
+    "@harnessio/ff-javascript-client-sdk": "^1.15.0",
     "lodash.omit": "^4.5.0"
   },
   "devDependencies": {
