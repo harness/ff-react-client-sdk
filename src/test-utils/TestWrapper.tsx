@@ -10,7 +10,8 @@ const mockClient: SDKClient = {
   off: jest.fn(),
   close: jest.fn(),
   setEvaluations: jest.fn(),
-  registerAPIRequestMiddleware: jest.fn()
+  registerAPIRequestMiddleware: jest.fn(),
+  refreshEvaluations: jest.fn()
 }
 
 export interface TestWrapperProps extends PropsWithChildren {
