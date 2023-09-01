@@ -1,9 +1,9 @@
 import { FFContext } from '../context/FFContext'
 import { useContext, useMemo } from 'react'
 
-export const useFeatureFlags = (
+export function useFeatureFlags(
   flagIdentifiers?: Record<string, any> | string[]
-): Record<keyof typeof flagIdentifiers, any> => {
+): Record<string, any> {
   const { client, flags } = useContext(FFContext)
 
   return useMemo(() => {
