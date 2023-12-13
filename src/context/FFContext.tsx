@@ -80,6 +80,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const onInitialLoad = (newFlags: FFContextValue['flags']): void => {
         setLoading(false)
         setFlags(newFlags)
+
+        client.on(FFEvent.CHANGED, onFlagChange)
       }
 
       const onFlagChange = ({ deleted, flag, value }: Evaluation): void => {
@@ -104,7 +106,6 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const onMetricsError = onNetworkError(FFEvent.ERROR_METRICS)
 
       client.on(FFEvent.READY, onInitialLoad)
-      client.on(FFEvent.CHANGED, onFlagChange)
       client.on(FFEvent.ERROR_AUTH, onAuthError)
       client.on(FFEvent.ERROR_STREAM, onStreamError)
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
