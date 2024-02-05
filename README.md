@@ -255,7 +255,7 @@ const myFlagValues = useFeatureFlags({
 
 ### `useFeatureFlagsLoading`
 
-The `useFeatureFlagsLoading` hook returns a boolean value indicating whether or not the SDK is currently loading Flags
+The `useFeatureFlagsLoading` hook returns a boolean value indicating whether the SDK is currently loading Flags
 from the server.
 
 ```typescript jsx
@@ -279,6 +279,38 @@ function MyComponent() {
       <p>My flag values are:</p>
       <pre>{JSON.stringify(flags, null, 2)}</pre>
     </>
+  )
+}
+```
+
+### `useFeatureFlagsClient`
+
+The React Client SDK internally uses the Javascript Client SDK to communicate with Harness. Sometimes it might be useful
+to be able to access the instance of the Javascript Client SDK rather than use the existing hooks or higher-order
+components (HOCs). The `useFeatureFlagsClient` hook returns the current Javascript Client SDK instance that the React
+Client SDK is using. This instance will be configured, initialized and have been hooked up to the various events the
+Javascript Client SDK provides.
+
+```typescript jsx
+import {
+  useFeatureFlagsClient,
+  useFeatureFlagsLoading
+} from '@harnessio/ff-react-client-sdk'
+
+// ...
+
+function MyComponent() {
+  const client = useFeatureFlagsClient()
+  const loading = useFeatureFlagsLoading()
+
+  if (loading || !client) {
+    return <p>Loading...</p>
+  }
+
+  return (
+    <p>
+      My flag value is: {client.variation('flagIdentifier', 'default value')}
+    </p>
   )
 }
 ```
@@ -378,6 +410,35 @@ function MyComponent({ flags, loading }) {
 }
 
 const MyComponentWithFlags = withFeatureFlags(MyComponent)
+```
+
+### `withFeatureFlagsClient`
+
+The React Client SDK internally uses the Javascript Client SDK to communicate with Harness. Sometimes it might be useful
+to be able to access the instance of the Javascript Client SDK rather than use the existing hooks or higher-order
+components (HOCs). The `withFeatureFlagsClient` HOC wraps your component and adds `featureFlagsClient` as additional
+prop. `featureFlagsClient` is the current Javascript Client SDK instance that the React Client SDK is using. This
+instance will be configured, initialized and have been hooked up to the various events the Javascript Client SDK
+provides.
+
+```typescript jsx
+import { withFeatureFlagsClient } from '@harnessio/ff-react-client-sdk'
+
+// ...
+
+function MyComponent({ featureFlagsClient }) {
+  if (featureFlagsClient) {
+    return (
+      <p>
+        Flag1's value is {featureFlagsClient.variation('flag1', 'no value')}
+      </p>
+    )
+  }
+
+  return <p>The Feature Flags client is not currently available</p>
+}
+
+const MyComponentWithClient = withFeatureFlagsClient(MyComponent)
 ```
 
 ## Testing with Jest

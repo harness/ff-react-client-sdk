@@ -4,7 +4,9 @@ import { useFeatureFlags } from '../hooks/useFeatureFlags'
 import { useFeatureFlagsLoading } from '../hooks/useFeatureFlagsLoading'
 
 export function withFeatureFlags<C>(
-  WrappedComponent: ComponentType<C & FFContextValue>
+  WrappedComponent: ComponentType<
+    C & { flags: FFContextValue['flags']; loading: FFContextValue['loading'] }
+  >
 ) {
   return (props: C) => (
     <WithFeatureFlagsComponent

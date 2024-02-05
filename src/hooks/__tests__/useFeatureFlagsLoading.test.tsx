@@ -1,5 +1,5 @@
 import { renderHook, RenderHookResult } from '@testing-library/react'
-import { TestWrapper } from '../../test-utils/TestWrapper'
+import { TestWrapper } from '../../test-utils'
 import { useFeatureFlagsLoading } from '../useFeatureFlagsLoading'
 
 const renderUseFeatureFlagsLoadingHook = (

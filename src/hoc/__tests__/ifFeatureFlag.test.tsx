@@ -2,7 +2,7 @@ import React, { ComponentType } from 'react'
 import { ifFeatureFlag } from '../ifFeatureFlag'
 import { render, RenderResult, screen } from '@testing-library/react'
 import { FFContextValue } from '../../context/FFContext'
-import { TestWrapper } from '../../test-utils/TestWrapper'
+import { TestWrapper } from '../../test-utils'
 
 const SampleComponent = () => (
   <span data-testid="sample-component">Sample Component</span>

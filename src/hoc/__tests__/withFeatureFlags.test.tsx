@@ -2,7 +2,7 @@ import React, { ComponentType, FC } from 'react'
 import { render, RenderResult, screen } from '@testing-library/react'
 import { FFContextValue } from '../../context/FFContext'
 import { withFeatureFlags } from '../withFeatureFlags'
-import { TestWrapper } from '../../test-utils/TestWrapper'
+import { TestWrapper } from '../../test-utils'
 
 const SampleComponent: FC = (props) => (
   <span data-testid="sample-component">{JSON.stringify(props)}</span>

@@ -1,6 +1,6 @@
 import { renderHook, RenderHookResult } from '@testing-library/react'
 import { useFeatureFlag } from '../useFeatureFlag'
-import { TestWrapper } from '../../test-utils/TestWrapper'
+import { TestWrapper } from '../../test-utils'
 
 const renderUseFeatureFlagHook = (
   args: Parameters<typeof useFeatureFlag>,
