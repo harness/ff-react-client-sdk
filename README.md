@@ -131,8 +131,24 @@ from the server behind the scenes.
 The `cache` option can also be passed as an object with the following options.
 
 ```typescript
-export interface CacheOptions {
-  ttl?: number // maximum age of stored cache, in ms, before it is considered stale
+interface CacheOptions {
+  // maximum age of stored cache, in ms, before it is considered stale
+  ttl?: number
+  // storage mechanism to use, conforming to the Web Storage API standard, can be either synchronous or asynchronous
+  // defaults to localStorage
+  storage?: AsyncStorage | SyncStorage
+}
+
+interface SyncStorage {
+  getItem: (key: string) => string | null
+  setItem: (key: string, value: string) => void
+  removeItem: (key: string) => void
+}
+
+interface AsyncStorage {
+  getItem: (key: string) => Promise<string | null>
+  setItem: (key: string, value: string) => Promise<void>
+  removeItem: (key: string) => Promise<void>
 }
 ```
 
@@ -175,8 +191,6 @@ function MyComponent() {
         baseUrl: 'https://url-to-access-flags.com',
         eventUrl: 'https://url-for-events.com',
         streamEnabled: true,
-        allAttributesPrivate: false,
-        privateAttributeNames: ['customAttribute'],
         debug: true,
         eventsSyncInterval: 60000
       }}
