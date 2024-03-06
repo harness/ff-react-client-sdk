@@ -152,6 +152,43 @@ interface AsyncStorage {
 }
 ```
 
+## Overriding the internal logger
+
+By default, the React Client SDK will log errors and debug messages using the `console` object. In some cases, it
+can be useful to instead log to a service or silently fail without logging errors.
+
+```typescript jsx
+const myLogger = {
+  debug: (...data) => {
+    // do something with the logged debug message
+  },
+  info: (...data) => {
+    // do something with the logged info message
+  },
+  error: (...data) => {
+    // do something with the logged error message
+  },
+  warn: (...data) => {
+    // do something with the logged warning message
+  }
+}
+
+return (
+  <FFContextProvider
+    apiKey="YOUR_API_KEY"
+    target={{
+      identifier: 'reactclientsdk',
+      name: 'ReactClientSDK'
+    }}
+    options={{
+      logger: myLogger
+    }}
+  >
+    <MyApp />
+  </FFContextProvider>
+)
+```
+
 ## API
 
 ### `FFContextProvider`
