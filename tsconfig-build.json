@@ -3,7 +3,8 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist/esm",
-    "declaration": true
+    "declaration": true,
+    "target": "ES2018"
   },
   "exclude": ["src/**/__tests__"]
 }
