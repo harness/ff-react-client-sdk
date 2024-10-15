@@ -15,6 +15,7 @@ import {
   Target, VariationValue
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
+import type {DefaultVariationEventPayload} from "../../../ff-javascript-client-sdk/src/types";
 
 export interface FFContextValue {
   loading: boolean
@@ -39,7 +40,7 @@ export interface FFContextProviderProps extends PropsWithChildren {
   async?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
-  onFlagNotFound?: (flag: string, defaultVariation: VariationValue, loading: boolean) => void
+  onFlagNotFound?: (flagNotFound: DefaultVariationEventPayload, loading: boolean) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -101,8 +102,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         onError(errorType, e)
       }
 
-      const onFlagNotFoundListener = ({ flag, defaultVariation }: { flag: string, defaultVariation: any }) => {
-        onFlagNotFound(flag, defaultVariation, loading)
+      const onFlagNotFoundListener = ({ flag, defaultVariation }: DefaultVariationEventPayload) => {
+        onFlagNotFound({ flag, defaultVariation }, loading)
       }
 
       const onAuthError = onNetworkError(FFEvent.ERROR_AUTH)
