@@ -12,7 +12,7 @@ import {
   initialize,
   Options,
   Result as InitializeResult,
-  Target
+  Target, VariationValue
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
 
@@ -39,7 +39,7 @@ export interface FFContextProviderProps extends PropsWithChildren {
   async?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
-  onFlagNotFound?: (flag: string, defaultVariation: any, loading: boolean) => void
+  onFlagNotFound?: (flag: string, defaultVariation: VariationValue, loading: boolean) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
