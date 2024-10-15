@@ -39,7 +39,7 @@ export interface FFContextProviderProps extends PropsWithChildren {
   async?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
-  onFlagNotFound?: (flag: string, defaultVariation: any) => void
+  onFlagNotFound?: (flag: string, defaultVariation: any, loading: boolean) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -102,7 +102,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       }
 
       const onFlagNotFoundListener = ({ flag, defaultVariation }: { flag: string, defaultVariation: any }) => {
-        onFlagNotFound(flag, defaultVariation)
+        onFlagNotFound(flag, defaultVariation, loading)
       }
 
       const onAuthError = onNetworkError(FFEvent.ERROR_AUTH)
@@ -117,7 +117,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
       client.on(FFEvent.ERROR_METRICS, onMetricsError)
-      client.on(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener) 
+      client.on(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
 
       if (initialEvaluations) {
         client.setEvaluations(initialEvaluations)
