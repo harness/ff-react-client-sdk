@@ -39,6 +39,7 @@ export interface FFContextProviderProps extends PropsWithChildren {
   async?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
+  onFlagNotFound?: (flag: string, defaultVariation: any) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -49,7 +50,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   fallback = <p>Loading...</p>,
   async = false,
   initialEvaluations,
-  onError = () => void 0
+  onError = () => void 0,
+  onFlagNotFound = () => void 0
 }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
@@ -99,6 +101,10 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         onError(errorType, e)
       }
 
+      const onFlagNotFoundListener = ({ flag, defaultVariation }: { flag: string, defaultVariation: any }) => {
+        onFlagNotFound(flag, defaultVariation)
+      }
+
       const onAuthError = onNetworkError(FFEvent.ERROR_AUTH)
       const onStreamError = onNetworkError(FFEvent.ERROR_STREAM)
       const onFetchFlagError = onNetworkError(FFEvent.ERROR_FETCH_FLAG)
@@ -111,6 +117,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
       client.on(FFEvent.ERROR_METRICS, onMetricsError)
+      client.on(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener) 
 
       if (initialEvaluations) {
         client.setEvaluations(initialEvaluations)
@@ -124,6 +131,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.off(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
         client.off(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
         client.off(FFEvent.ERROR_METRICS, onMetricsError)
+        client.off(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
 
         client.close()
       }
