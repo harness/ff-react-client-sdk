@@ -139,7 +139,6 @@ This can happen when:
 
 By using the onFlagNotFound prop, your application can be notified whenever a flag is missing and the default variation has been returned.
 
-
 ## Caching evaluations
 
 In practice flags rarely change and so it can be useful to cache the last received evaluations from the server to allow
