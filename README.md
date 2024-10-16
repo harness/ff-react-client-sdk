@@ -108,7 +108,7 @@ The React Client SDK's asynchronous mode allows this by passing the optional `as
 
 ## On Flag Not Found
 The `onFlagNotFound` option allows you to handle situations where a default variation is returned. 
-It includes the flag, variation, and whether the SDK was still initializing when the default was served. 
+It includes the flag, variation, and whether the SDK was still initializing (`loading)` when the default was served. 
 
 This can happen when:
 
@@ -123,12 +123,13 @@ This can happen when:
           identifier: 'reactclientsdk',
           name: 'ReactClientSDK'
         }}
-        onFlagNotFound={(flag, defaultVariation, loading) => {
+        onFlagNotFound={(flagNotFoundPayload, loading) => {
           if (loading) {
-            console.debug(`Flag "${flag}" not found because the SDK is still initializing. Returned default: ${defaultVariation}`);
+            console.debug(`Flag "${flagNotFound.flag}" not found because the SDK is still initializing. Returned default: ${flagNotFound.defaultVariation}`);
           } else {
-            console.warn(`Flag "${flag}" not found but should have been in the cache. Returned default: ${defaultVariation}`);
+            console.warn(`Flag "${flagNotFound.flag}" not found. Returned default: ${flagNotFound.defaultVariation}`);
           }
+
         }}
 >
   <MyApp />
