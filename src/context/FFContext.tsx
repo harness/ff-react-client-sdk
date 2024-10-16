@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   ReactNode,
   useEffect,
+  useRef,
   useState
 } from 'react'
 import {
@@ -12,10 +13,11 @@ import {
   initialize,
   Options,
   Result as InitializeResult,
-  Target, VariationValue
+  Target,
+  VariationValue,
+  DefaultVariationEventPayload
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
-import type {DefaultVariationEventPayload} from "../../../ff-javascript-client-sdk/src/types";
 
 export interface FFContextValue {
   loading: boolean
@@ -40,7 +42,10 @@ export interface FFContextProviderProps extends PropsWithChildren {
   async?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
-  onFlagNotFound?: (flagNotFound: DefaultVariationEventPayload, loading: boolean) => void
+  onFlagNotFound?: (
+    flagNotFound: DefaultVariationEventPayload,
+    loading: boolean
+  ) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -58,6 +63,9 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
   const [clientInstance, setClientInstance] =
     useState<FFContextValue['client']>()
+
+  // Create a ref to store the current value of loading
+  const loadingRef = useRef(loading)
 
   useEffect(() => {
     if (!apiKey) {
@@ -78,10 +86,15 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const client = initialize(apiKey, target, options)
 
       setLoading(true)
+      loadingRef.current = true;
+
       setClientInstance(client)
 
       const onInitialLoad = (newFlags: FFContextValue['flags']): void => {
         setLoading(false)
+
+        loadingRef.current = false;
+
         setFlags(newFlags)
 
         client.on(FFEvent.CHANGED, onFlagChange)
@@ -102,8 +115,11 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         onError(errorType, e)
       }
 
-      const onFlagNotFoundListener = ({ flag, defaultVariation }: DefaultVariationEventPayload) => {
-        onFlagNotFound({ flag, defaultVariation }, loading)
+      const onFlagNotFoundListener = ({
+        flag,
+        defaultVariation
+      }: DefaultVariationEventPayload) => {
+        onFlagNotFound({ flag, defaultVariation }, loadingRef.current)
       }
 
       const onAuthError = onNetworkError(FFEvent.ERROR_AUTH)
@@ -118,7 +134,10 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
       client.on(FFEvent.ERROR_METRICS, onMetricsError)
-      client.on(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
+      client.on(
+        FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
+        onFlagNotFoundListener
+      )
 
       if (initialEvaluations) {
         client.setEvaluations(initialEvaluations)
@@ -132,7 +151,10 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.off(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
         client.off(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
         client.off(FFEvent.ERROR_METRICS, onMetricsError)
-        client.off(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
+        client.off(
+          FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
+          onFlagNotFoundListener
+        )
 
         client.close()
       }
