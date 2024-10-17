@@ -14,7 +14,6 @@ import {
   Options,
   Result as InitializeResult,
   Target,
-  VariationValue,
   DefaultVariationEventPayload
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
@@ -64,7 +63,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   const [clientInstance, setClientInstance] =
     useState<FFContextValue['client']>()
 
-  // Use a reference to keep track of the latest loading state so we can use it with event callbacks. 
+  // Use a reference to keep track of the latest loading state so we can use it with event callbacks.
   const loadingRef = useRef(true)
 
   useEffect(() => {
