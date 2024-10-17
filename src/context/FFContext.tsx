@@ -67,7 +67,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   // Use a reference to keep track of the latest loading state, allowing access to its current value
   // in event callbacks, like the onFlagNotFound callback, even if the `loading` state hasn't yet updated
   // due to React's asynchronous state updates.
-  const loadingRef = useRef(true);
+  const loadingRef = useRef(true)
 
   useEffect(() => {
     if (!apiKey) {
@@ -88,13 +88,13 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const client = initialize(apiKey, target, options)
 
       setLoading(true)
-      loadingRef.current = true;
+      loadingRef.current = true
 
       setClientInstance(client)
 
       const onInitialLoad = (newFlags: FFContextValue['flags']): void => {
         setLoading(false)
-        loadingRef.current = false;
+        loadingRef.current = false
 
         setFlags(newFlags)
 
