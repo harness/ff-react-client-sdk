@@ -64,9 +64,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   const [clientInstance, setClientInstance] =
     useState<FFContextValue['client']>()
 
-  // Use a reference to keep track of the latest loading state, allowing access to its current value
-  // in event callbacks, like the onFlagNotFound callback, even if the `loading` state hasn't yet updated
-  // due to React's asynchronous state updates.
+  // Use a reference to keep track of the latest loading state so we can use it with event callbacks. 
   const loadingRef = useRef(true)
 
   useEffect(() => {
