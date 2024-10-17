@@ -105,6 +105,39 @@ may be beneficial to immediately render the application and handle display of lo
 The React Client SDK's asynchronous mode allows this by passing the optional `async` prop when connecting with the
 `FFContextProvider`.
 
+
+## On Flag Not Found
+The `onFlagNotFound` option allows you to handle situations where a default variation is returned. 
+It includes the flag, variation, and whether the SDK was still initializing (`loading)` when the default was served. 
+
+This can happen when:
+
+1. Using `async` mode without `cache` or `initialEvaluations` and where the SDK is still initializing. 
+2. The flag identifier is incorrect (e.g., due to a typo).
+3. The wrong API key is being used, and the expected flags are not available for that project.
+
+```typescript jsx
+<FFContextProvider
+  apiKey="YOUR_API_KEY"
+  target={{
+    identifier: 'reactclientsdk',
+    name: 'ReactClientSDK'
+  }}
+  onFlagNotFound={(flagNotFoundPayload, loading) => {
+    if (loading) {
+      console.debug(`Flag "${flagNotFound.flag}" not found because the SDK is still initializing. Returned default: ${flagNotFound.defaultVariation}`);
+    } else {
+      console.warn(`Flag "${flagNotFound.flag}" not found. Returned default: ${flagNotFound.defaultVariation}`);
+    }
+  }}
+>
+  <MyApp />
+</FFContextProvider>
+
+```
+
+By using the `onFlagNotFound` prop, your application can be notified whenever a flag is missing and the default variation has been returned.
+
 ## Caching evaluations
 
 In practice flags rarely change and so it can be useful to cache the last received evaluations from the server to allow

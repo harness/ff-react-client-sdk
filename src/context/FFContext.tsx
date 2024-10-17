@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   ReactNode,
   useEffect,
+  useRef,
   useState
 } from 'react'
 import {
@@ -12,7 +13,8 @@ import {
   initialize,
   Options,
   Result as InitializeResult,
-  Target
+  Target,
+  DefaultVariationEventPayload
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
 
@@ -39,6 +41,10 @@ export interface FFContextProviderProps extends PropsWithChildren {
   async?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
+  onFlagNotFound?: (
+    flagNotFound: DefaultVariationEventPayload,
+    loading: boolean
+  ) => void
 }
 
 export const FFContextProvider: FC<FFContextProviderProps> = ({
@@ -49,12 +55,16 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   fallback = <p>Loading...</p>,
   async = false,
   initialEvaluations,
-  onError = () => void 0
+  onError = () => void 0,
+  onFlagNotFound = () => void 0
 }) => {
   const [loading, setLoading] = useState<boolean>(true)
   const [flags, setFlags] = useState<FFContextValue['flags']>({})
   const [clientInstance, setClientInstance] =
     useState<FFContextValue['client']>()
+
+  // Use a reference to keep track of the latest loading state so we can use it with event callbacks.
+  const loadingRef = useRef(true)
 
   useEffect(() => {
     if (!apiKey) {
@@ -75,10 +85,14 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const client = initialize(apiKey, target, options)
 
       setLoading(true)
+      loadingRef.current = true
+
       setClientInstance(client)
 
       const onInitialLoad = (newFlags: FFContextValue['flags']): void => {
         setLoading(false)
+        loadingRef.current = false
+
         setFlags(newFlags)
 
         client.on(FFEvent.CHANGED, onFlagChange)
@@ -99,6 +113,13 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         onError(errorType, e)
       }
 
+      const onFlagNotFoundListener = ({
+        flag,
+        defaultVariation
+      }: DefaultVariationEventPayload) => {
+        onFlagNotFound({ flag, defaultVariation }, loadingRef.current)
+      }
+
       const onAuthError = onNetworkError(FFEvent.ERROR_AUTH)
       const onStreamError = onNetworkError(FFEvent.ERROR_STREAM)
       const onFetchFlagError = onNetworkError(FFEvent.ERROR_FETCH_FLAG)
@@ -111,6 +132,10 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
       client.on(FFEvent.ERROR_METRICS, onMetricsError)
+      client.on(
+        FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
+        onFlagNotFoundListener
+      )
 
       if (initialEvaluations) {
         client.setEvaluations(initialEvaluations)
@@ -124,6 +149,10 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.off(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
         client.off(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
         client.off(FFEvent.ERROR_METRICS, onMetricsError)
+        client.off(
+          FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
+          onFlagNotFoundListener
+        )
 
         client.close()
       }
