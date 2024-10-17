@@ -2,14 +2,14 @@ import { render, waitFor } from '@testing-library/react'
 import { FFContextProvider, FFContextProviderProps } from './FFContext'
 import { Event, initialize } from '@harnessio/ff-javascript-client-sdk'
 
-// Mock the initialize method from the SDK
+// Mock the FF JS SDK
 jest.mock('@harnessio/ff-javascript-client-sdk', () => ({
   initialize: jest.fn(),
-  // Mock these so we can manually emit them from the tests
+  // Mock these so we can manually invoke the callback functions in the tests
   Event: {
     READY: 'ready',
     ERROR_DEFAULT_VARIATION_RETURNED: 'default variation returned',
-    ERROR_AUTH: 'auth error',
+    ERROR_AUTH: 'auth error'
   }
 }))
 
@@ -98,7 +98,7 @@ describe('FFContextProvider', () => {
     )?.[1]
     readyCallback?.({})
 
-    // Simulate the SDK triggering the ERROR_DEFAULT_VARIATION_RETURNED event
+    // Flag can't be found after initialising
     const flagNotFoundCallback = mockOn.mock.calls.find(
       (call) => call[0] === Event.ERROR_DEFAULT_VARIATION_RETURNED
     )?.[1]
@@ -137,7 +137,7 @@ describe('FFContextProvider', () => {
       </FFContextProvider>
     )
 
-    // SDK emits default variation event as it is not initialised yet
+    // Flag can't be found as not initialised
     const flagNotFoundCallback = mockOn.mock.calls.find(
       (call) => call[0] === Event.ERROR_DEFAULT_VARIATION_RETURNED
     )?.[1]
