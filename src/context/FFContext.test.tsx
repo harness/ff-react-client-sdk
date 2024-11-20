@@ -71,7 +71,7 @@ describe('FFContextProvider', () => {
     expect(getByText('Loaded')).toBeInTheDocument()
   })
 
-  test('it triggers onFlagNotFound callback when flag is missing with async disabled', async () => {
+  test('it triggers onFlagNotFound callback when flag is missing with asyncMode disabled', async () => {
     const mockOn = jest.fn()
     const mockOnFlagNotFound = jest.fn()
 
@@ -86,7 +86,7 @@ describe('FFContextProvider', () => {
         apiKey="test-api-key"
         target={{ identifier: 'test-target' }}
         onFlagNotFound={mockOnFlagNotFound}
-        async={false}
+        asyncMode={false}
       >
         <p>Loaded</p>
       </FFContextProvider>
@@ -116,7 +116,7 @@ describe('FFContextProvider', () => {
     )
   })
 
-  test('it triggers onFlagNotFound callback when flag is missing with async enabled', async () => {
+  test('it triggers onFlagNotFound callback when flag is missing with asyncMode enabled', async () => {
     const mockOn = jest.fn()
     const mockOnFlagNotFound = jest.fn()
 
@@ -131,7 +131,7 @@ describe('FFContextProvider', () => {
         apiKey="test-api-key"
         target={{ identifier: 'test-target' }}
         onFlagNotFound={mockOnFlagNotFound}
-        async={true}
+        asyncMode={true}
       >
         <p>Loaded</p>
       </FFContextProvider>
