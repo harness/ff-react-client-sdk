@@ -38,7 +38,7 @@ export interface FFContextProviderProps extends PropsWithChildren {
   target: Target
   options?: Options
   fallback?: ReactNode
-  async?: boolean
+  asyncMode?: boolean
   initialEvaluations?: Evaluation[]
   onError?: (event: NetworkError | 'PropsError', error?: unknown) => void
   onFlagNotFound?: (
@@ -53,7 +53,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
   target,
   options = {},
   fallback = <p>Loading...</p>,
-  async = false,
+  asyncMode = false,
   initialEvaluations,
   onError = () => void 0,
   onFlagNotFound = () => void 0
@@ -161,7 +161,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
 
   return (
     <FFContext.Provider value={{ loading, flags, client: clientInstance }}>
-      {!async && loading ? fallback : children}
+      {!asyncMode && loading ? fallback : children}
     </FFContext.Provider>
   )
 }

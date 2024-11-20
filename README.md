@@ -102,7 +102,7 @@ function MultipleFeatureFlags() {
 By default, the React Client SDK will block rendering of children until the initial load of Feature Flags has completed.
 This ensures that children have immediate access to all Flags when they are rendered. However, in some circumstances it
 may be beneficial to immediately render the application and handle display of loading on a component-by-component basis.
-The React Client SDK's asynchronous mode allows this by passing the optional `async` prop when connecting with the
+The React Client SDK's asynchronous mode allows this by passing the optional `asyncMode` prop when connecting with the
 `FFContextProvider`.
 
 
@@ -112,7 +112,7 @@ It includes the flag, variation, and whether the SDK was still initializing (`lo
 
 This can happen when:
 
-1. Using `async` mode without `cache` or `initialEvaluations` and where the SDK is still initializing. 
+1. Using `asyncMode` mode without `cache` or `initialEvaluations` and where the SDK is still initializing. 
 2. The flag identifier is incorrect (e.g., due to a typo).
 3. The wrong API key is being used, and the expected flags are not available for that project.
 
@@ -232,7 +232,7 @@ using the `useFeatureFlag` and `useFeatureFlags` hooks and `withFeatureFlags`
 your Harness Feature Flags account, and the `target`. You can think of a `target` as a user.
 
 The `FFContextProvider` component also accepts an `options` object, a `fallback` component, an array
-of `initialEvaluations`, an `onError` handler, and can be placed in [Async mode](#Async-mode) using the `async` prop.
+of `initialEvaluations`, an `onError` handler, and can be placed in [Async mode](#Async-mode) using the `asyncMode` prop.
 The `fallback` component will be displayed while the SDK is connecting and fetching your flags. The `initialEvaluations`
 prop allows you pass an array of evaluations to use immediately as the SDK is authenticating and fetching flags.
 The `onError` prop allows you to pass an event handler which will be called whenever a network error occurs.
@@ -245,7 +245,7 @@ import { FFContextProvider } from '@harnessio/ff-react-client-sdk'
 function MyComponent() {
   return (
     <FFContextProvider
-      async={false} // OPTIONAL: whether or not to use async mode
+      asyncMode={false} // OPTIONAL: whether or not to use async mode
       apiKey="YOUR_API_KEY" // your SDK API key
       target={{
         identifier: 'targetId', // unique ID of the Target
