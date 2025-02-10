@@ -105,14 +105,14 @@ may be beneficial to immediately render the application and handle display of lo
 The React Client SDK's asynchronous mode allows this by passing the optional `asyncMode` prop when connecting with the
 `FFContextProvider`.
 
-
 ## On Flag Not Found
-The `onFlagNotFound` option allows you to handle situations where a default variation is returned. 
-It includes the flag, variation, and whether the SDK was still initializing (`loading)` when the default was served. 
+
+The `onFlagNotFound` option allows you to handle situations where a default variation is returned.
+It includes the flag, variation, and whether the SDK was still initializing (`loading`) when the default was served.
 
 This can happen when:
 
-1. Using `asyncMode` mode without `cache` or `initialEvaluations` and where the SDK is still initializing. 
+1. Using `asyncMode` mode without `cache` or `initialEvaluations` and where the SDK is still initializing.
 2. The flag identifier is incorrect (e.g., due to a typo).
 3. The wrong API key is being used, and the expected flags are not available for that project.
 
@@ -125,18 +125,22 @@ This can happen when:
   }}
   onFlagNotFound={(flagNotFoundPayload, loading) => {
     if (loading) {
-      console.debug(`Flag "${flagNotFound.flag}" not found because the SDK is still initializing. Returned default: ${flagNotFound.defaultVariation}`);
+      console.debug(
+        `Flag "${flagNotFound.flag}" not found because the SDK is still initializing. Returned default: ${flagNotFound.defaultVariation}`
+      )
     } else {
-      console.warn(`Flag "${flagNotFound.flag}" not found. Returned default: ${flagNotFound.defaultVariation}`);
+      console.warn(
+        `Flag "${flagNotFound.flag}" not found. Returned default: ${flagNotFound.defaultVariation}`
+      )
     }
   }}
 >
   <MyApp />
 </FFContextProvider>
-
 ```
 
-By using the `onFlagNotFound` prop, your application can be notified whenever a flag is missing and the default variation has been returned.
+By using the `onFlagNotFound` prop, your application can be notified whenever a flag is missing and the default
+variation has been returned.
 
 ## Caching evaluations
 
@@ -170,6 +174,12 @@ interface CacheOptions {
   // storage mechanism to use, conforming to the Web Storage API standard, can be either synchronous or asynchronous
   // defaults to localStorage
   storage?: AsyncStorage | SyncStorage
+  // use target attributes when deriving the cache key
+  // when set to `false` or omitted, the key will be formed using only the target identifier and SDK key
+  // when set to `true`, all target attributes with be used in addition to the target identifier and SDK key
+  // can be set to an array of target attributes to use a subset in addition to the target identifier and SDK key
+  // defaults to false
+  deriveKeyFromTargetAttributes?: boolean | string[]
 }
 
 interface SyncStorage {
@@ -232,7 +242,8 @@ using the `useFeatureFlag` and `useFeatureFlags` hooks and `withFeatureFlags`
 your Harness Feature Flags account, and the `target`. You can think of a `target` as a user.
 
 The `FFContextProvider` component also accepts an `options` object, a `fallback` component, an array
-of `initialEvaluations`, an `onError` handler, and can be placed in [Async mode](#Async-mode) using the `asyncMode` prop.
+of `initialEvaluations`, an `onError` handler, and can be placed in [Async mode](#Async-mode) using the `asyncMode`
+prop.
 The `fallback` component will be displayed while the SDK is connecting and fetching your flags. The `initialEvaluations`
 prop allows you pass an array of evaluations to use immediately as the SDK is authenticating and fetching flags.
 The `onError` prop allows you to pass an event handler which will be called whenever a network error occurs.
