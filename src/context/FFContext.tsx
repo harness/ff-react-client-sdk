@@ -4,19 +4,22 @@ import {
   PropsWithChildren,
   ReactNode,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react'
 import {
+  DefaultVariationEventPayload,
   Evaluation,
   Event as FFEvent,
   initialize,
   Options,
   Result as InitializeResult,
-  Target,
-  DefaultVariationEventPayload
+  Target
 } from '@harnessio/ff-javascript-client-sdk'
 import omit from 'lodash.omit'
+
+export { Event } from '@harnessio/ff-javascript-client-sdk'
 
 export interface FFContextValue {
   loading: boolean
@@ -33,7 +36,7 @@ export type NetworkError =
   | FFEvent.ERROR_FETCH_FLAGS
   | FFEvent.ERROR_METRICS
 
-export interface FFContextProviderProps extends PropsWithChildren {
+export interface FFContextProviderProps extends PropsWithChildren<unknown> {
   apiKey: string
   target: Target
   options?: Options
@@ -157,11 +160,26 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.close()
       }
     }
-  }, [apiKey, JSON.stringify(target), initialEvaluations])
+  }, [
+    apiKey,
+    JSON.stringify(target),
+    initialEvaluations,
+    options?.baseUrl,
+    options?.eventUrl,
+    options?.streamEnabled,
+    options?.pollingEnabled
+  ])
+
+  const value = useMemo(
+    () => ({ loading, flags, client: clientInstance }),
+    [loading, flags, clientInstance]
+  )
 
   return (
-    <FFContext.Provider value={{ loading, flags, client: clientInstance }}>
+    <FFContext.Provider value={value}>
       {!asyncMode && loading ? fallback : children}
     </FFContext.Provider>
   )
 }
+
+FFContextProvider.displayName = 'FFContextProvider'
