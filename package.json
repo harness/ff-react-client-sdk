@@ -1,6 +1,6 @@
 {
   "name": "@harnessio/ff-react-client-sdk",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": "Harness",
   "license": "Apache-2.0",
   "module": "dist/esm/index.js",
