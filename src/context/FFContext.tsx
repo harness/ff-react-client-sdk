@@ -130,7 +130,12 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const onMetricsError = onNetworkError(FFEvent.ERROR_METRICS)
 
       client.on(FFEvent.READY, onInitialLoad)
-      client.on(FFEvent.ERROR_AUTH, onAuthError)
+      client.on(FFEvent.ERROR_AUTH, (error: unknown) => {
+        // ERROR_AUTH implies that the loading process has stopped
+        setLoading(false)
+        loadingRef.current = false
+        onAuthError(error)
+      })
       client.on(FFEvent.ERROR_STREAM, onStreamError)
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
