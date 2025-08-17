@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import { FFContextProvider, FFContextProviderProps } from './FFContext'
+import { FFContextProvider, FFContextProviderProps } from '../FFContext'
 import { Event, initialize } from '@harnessio/ff-javascript-client-sdk'
 
 // Mock the FF JS SDK

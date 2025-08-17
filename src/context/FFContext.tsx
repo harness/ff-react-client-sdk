@@ -167,7 +167,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
     options?.baseUrl,
     options?.eventUrl,
     options?.streamEnabled,
-    options?.pollingEnabled
+    options?.pollingEnabled,
+    options?.enableAnalytics,
   ])
 
   const value = useMemo(
