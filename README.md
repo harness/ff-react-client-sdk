@@ -99,7 +99,7 @@ function MultipleFeatureFlags() {
 
 ## Async mode
 
-By default, the React Client SDK will block rendering of children until the initial load of Feature Flags has completed.
+By default, the React Client SDK will block rendering of children until the initial load of Feature Flags has finished, either successfully (`Event.READY` is emitted) or with a non-recoverable error (`Event.ERROR_AUTH` is emitted).
 This ensures that children have immediate access to all Flags when they are rendered. However, in some circumstances it
 may be beneficial to immediately render the application and handle display of loading on a component-by-component basis.
 The React Client SDK's asynchronous mode allows this by passing the optional `asyncMode` prop when connecting with the
@@ -114,7 +114,7 @@ This can happen when:
 
 1. Using `asyncMode` mode without `cache` or `initialEvaluations` and where the SDK is still initializing.
 2. The flag identifier is incorrect (e.g., due to a typo).
-3. The wrong API key is being used, and the expected flags are not available for that project.
+3. The `Event.ERROR_AUTH` event is emitted, which means that a non-recoverable error occurred, such as a wrong API key is being used or authentication failed, and the expected flags are not available for that project.
 
 ```typescript jsx
 <FFContextProvider
@@ -244,7 +244,7 @@ your Harness Feature Flags account, and the `target`. You can think of a `target
 The `FFContextProvider` component also accepts an `options` object, a `fallback` component, an array
 of `initialEvaluations`, an `onError` handler, and can be placed in [Async mode](#Async-mode) using the `asyncMode`
 prop.
-The `fallback` component will be displayed while the SDK is connecting and fetching your flags. The `initialEvaluations`
+The `fallback` component will be displayed while the SDK is loading and fetching your flags. The `initialEvaluations`
 prop allows you pass an array of evaluations to use immediately as the SDK is authenticating and fetching flags.
 The `onError` prop allows you to pass an event handler which will be called whenever a network error occurs.
 
@@ -488,8 +488,8 @@ const MyComponentWithFlags = withFeatureFlags(MyComponent)
 
 #### Loading in async mode
 
-If [Async mode](#Async-mode) is used, the `loading` prop will indicate whether the SDK has completed loading the Flags.
-When loading completes, the `loading` prop will be `false` and the `flags` prop will contain all known Flags.
+If [Async mode](#Async-mode) is used, the `loading` prop will indicate whether the SDK has finished the initial load of Feature Flags.
+When loading finishes, either successfully (`Event.READY` is emitted) or with a non-recoverable error (`Event.ERROR_AUTH` is emitted), the `loading` prop will be `false` and the `flags` prop will contain all known Flags.
 
 ```typescript jsx
 import { withFeatureFlags } from '@harnessio/ff-react-client-sdk'

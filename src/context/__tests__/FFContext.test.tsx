@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react'
-import { FFContextProvider, FFContextProviderProps } from './FFContext'
+import { FFContextProvider, FFContextProviderProps } from '../FFContext'
 import { Event, initialize } from '@harnessio/ff-javascript-client-sdk'
 
 // Mock the FF JS SDK
@@ -40,7 +40,10 @@ describe('FFContextProvider', () => {
     expect(getByText('Loading...')).toBeInTheDocument()
   })
 
-  test('it updates loading state after SDK is ready', async () => {
+  test.each([
+    [Event.READY],
+    [Event.ERROR_AUTH]
+  ])('it updates loading state after SDK is ready or error auth', async (event) => {
     const mockOn = jest.fn()
 
     mockInitialize.mockReturnValueOnce({
@@ -58,11 +61,11 @@ describe('FFContextProvider', () => {
       </FFContextProvider>
     )
 
-    // Simulate the SDK's "ready" event
-    const readyCallback = mockOn.mock.calls.find(
-      (call) => call[0] === Event.READY
+    // Simulate the SDK's "ready" and "error_auth" events
+    const eventCallback = mockOn.mock.calls.find(
+      (call) => call[0] === event
     )?.[1]
-    readyCallback?.({})
+    eventCallback?.({})
 
     // Wait for the component to update after the SDK is ready
     await waitFor(() =>

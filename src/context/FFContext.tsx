@@ -130,15 +130,17 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       const onMetricsError = onNetworkError(FFEvent.ERROR_METRICS)
 
       client.on(FFEvent.READY, onInitialLoad)
-      client.on(FFEvent.ERROR_AUTH, onAuthError)
+      client.on(FFEvent.ERROR_AUTH, (error: unknown) => {
+        // ERROR_AUTH implies that the loading process has stopped
+        setLoading(false)
+        loadingRef.current = false
+        onAuthError(error)
+      })
       client.on(FFEvent.ERROR_STREAM, onStreamError)
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
       client.on(FFEvent.ERROR_METRICS, onMetricsError)
-      client.on(
-        FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
-        onFlagNotFoundListener
-      )
+      client.on(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
 
       if (initialEvaluations) {
         client.setEvaluations(initialEvaluations)
@@ -152,10 +154,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.off(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
         client.off(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
         client.off(FFEvent.ERROR_METRICS, onMetricsError)
-        client.off(
-          FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
-          onFlagNotFoundListener
-        )
+        client.off(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
 
         client.close()
       }
@@ -167,7 +166,8 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
     options?.baseUrl,
     options?.eventUrl,
     options?.streamEnabled,
-    options?.pollingEnabled
+    options?.pollingEnabled,
+    options?.enableAnalytics,
   ])
 
   const value = useMemo(
