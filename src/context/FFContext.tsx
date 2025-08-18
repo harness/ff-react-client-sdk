@@ -140,10 +140,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
       client.on(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
       client.on(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
       client.on(FFEvent.ERROR_METRICS, onMetricsError)
-      client.on(
-        FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
-        onFlagNotFoundListener
-      )
+      client.on(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
 
       if (initialEvaluations) {
         client.setEvaluations(initialEvaluations)
@@ -157,10 +154,7 @@ export const FFContextProvider: FC<FFContextProviderProps> = ({
         client.off(FFEvent.ERROR_FETCH_FLAG, onFetchFlagError)
         client.off(FFEvent.ERROR_FETCH_FLAGS, onFetchFlagsError)
         client.off(FFEvent.ERROR_METRICS, onMetricsError)
-        client.off(
-          FFEvent.ERROR_DEFAULT_VARIATION_RETURNED,
-          onFlagNotFoundListener
-        )
+        client.off(FFEvent.ERROR_DEFAULT_VARIATION_RETURNED, onFlagNotFoundListener)
 
         client.close()
       }
